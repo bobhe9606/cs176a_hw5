@@ -8,11 +8,16 @@ import random
 def hangman(connectionSocket, addr, words):
     clientMessage = connectionSocket.recv(1024).decode()
     guessWord = words[random.randint(0, 14)]
-    gameFinished = False
     lettersGuessed = []
     incorrectGuesses = []
     numIncorrect = 0
     wordLength = len(guessWord)
+
+    if clientMessage.decod() == '0':
+        gameFinished = False
+    else:
+        gameFinished = True
+        
     while not gameFinished:
         if(clientMessage[1] and clientMessage[1] not in lettersGuessed):
             lettersGuessed.append(clientMessage[1])

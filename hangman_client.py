@@ -8,10 +8,12 @@ clientSocket.connect((serverName, serverPort))
 message = input('Ready to start game? (y/n): ')
 if message == 'y':
     clientSocket.send('0')
+    start = True
 else:
     print('Game Over!')
+    start = False
 
-while True:
+while start:
     zero, wordLength, numIncorrect, msg, incorrectGuesses = clientSocket.recv(1024)
     print(msg.decode())
     print('Incorrect Guesses: ', incorrectGuesses.decode(), '\n')
