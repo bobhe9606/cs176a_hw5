@@ -17,7 +17,7 @@ def hangman(connectionSocket, addr, words):
         gameFinished = False
     else:
         gameFinished = True
-        
+
     while not gameFinished:
         if(clientMessage[1] and clientMessage[1] not in lettersGuessed):
             lettersGuessed.append(clientMessage[1])

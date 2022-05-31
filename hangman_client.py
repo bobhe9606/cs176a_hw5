@@ -19,7 +19,14 @@ while start:
     print('Incorrect Guesses: ', incorrectGuesses.decode(), '\n')
 
     letter = input('Letter to guess: ')
-    clientSocket.send(letter.encode())
+    letter = letter.encode()
+    while(len(letter) > 1 or letter.isdigit()):
+        print('Error! Please guess one letter')
+        letter = input('Letter to guess: ')
+        letter = letter.encode()
+
+    letter = letter.lower()
+    clientSocket.send(letter)
     status, msg = clientSocket.recv(1024)
     status = status.decode()
     msg = msg.decode()
@@ -27,9 +34,13 @@ while start:
         print('The word was ', msg)
         print(status)
         print("Game Over!")
+        start =  False
     elif(status== "You Lose :("):
         print(status)
         print('Game Over!')
+        start =  False
+
+clientSocket.close()
 
 
 
