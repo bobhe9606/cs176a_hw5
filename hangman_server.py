@@ -28,12 +28,12 @@ def hangman(connectionSocket, addr, words):
             else:
                 msg += '_'
         if(msg == guessWord):
-            connectionSocket.send("8You Win!".encode())
+            connectionSocket.send("You Win!".encode(), msg.encode())
         for x in range(incorrectGuesses):
             msg += incorrectGuesses[x]
             
-        connectionSocket.send("{}{}{}{}"
-        .format(0, chr(wordLength), chr(numIncorrect), msg)
+        connectionSocket.send("{}{}{}{}{}"
+        .format(0, chr(wordLength), chr(numIncorrect), msg, incorrectGuesses)
         .encode())
     connectionSocket.close()
     numClients -= 1
@@ -43,7 +43,7 @@ with open('hangman_words.txt') as wordFile:
 
 serverPort = int(sys.argv[1])
 serverSocket = socket(AF_INET, SOCK_STREAM)
-serverSocket.bind('127.0.0.1', serverPort)
+serverSocket.bind(('127.0.0.1', serverPort))
 serverSocket.listen()
 print('The Server is ready to receive')
 numClients = 0
