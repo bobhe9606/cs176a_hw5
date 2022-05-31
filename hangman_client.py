@@ -7,7 +7,7 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 message = input('Ready to start game? (y/n): ')
 if message == 'y':
-    clientSocket.send('0')
+    clientSocket.send(message.encode())
     start = True
 else:
     print('Game Over!')

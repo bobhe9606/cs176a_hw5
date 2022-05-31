@@ -13,7 +13,7 @@ def hangman(connectionSocket, addr, words):
     numIncorrect = 0
     wordLength = len(guessWord)
 
-    if clientMessage.decod() == '0':
+    if clientMessage.decode() == '0':    #if empty message is received
         gameFinished = False
     else:
         gameFinished = True
@@ -33,12 +33,12 @@ def hangman(connectionSocket, addr, words):
             else:
                 msg += '_'
         if(msg == guessWord):
-            connectionSocket.send("You Win!".encode(), msg.encode())
+            connectionSocket.send("You Win!".encode(), msg.encode())    #also send message
         for x in range(incorrectGuesses):
             msg += incorrectGuesses[x]
             
         connectionSocket.send("{}{}{}{}{}"
-        .format(0, chr(wordLength), chr(numIncorrect), msg, incorrectGuesses)
+        .format(0, chr(wordLength), chr(numIncorrect), msg, incorrectGuesses)   #client needs to know incorrectGuesses too
         .encode())
     connectionSocket.close()
     numClients -= 1
