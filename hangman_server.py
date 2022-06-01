@@ -14,7 +14,7 @@ def hangman(connectionSocket, addr, words):
     msg_flag = 0                    #msg_flag?
     wordLength = len(guessWord)
 
-    if clientMessage.decode() == '0':    #if empty message is received, then we start game
+    if clientMessage == '0':    #if empty message is received, then we start game
         gameFinished = False
     else:
         gameFinished = True
@@ -40,13 +40,17 @@ def hangman(connectionSocket, addr, words):
         connectionSocket.send("{}{}{}{}"
         .format(msg_flag, chr(wordLength), chr(numIncorrect), msg)       #msg flag?
         .encode())
+
     connectionSocket.close()
     numClients -= 1
+
 
 with open('hangman_words.txt') as wordFile:
     words = wordFile.readlines()
 
 serverPort = int(sys.argv[1])
+seed = int(sys.argv[2])     #to control randomness
+random.seed(seed)
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('127.0.0.1', serverPort))
 serverSocket.listen()
@@ -61,7 +65,7 @@ while True:
         connectionSocket.close()
 
     numClients += 1
-    clientGame = threading.Thread(hangman, (connectionSocket, addr, words))
+    clientGame = threading.Thread(target=hangman, args=(connectionSocket, addr, words,))
     clientGame.start()
 
 

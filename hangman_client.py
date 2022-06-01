@@ -14,7 +14,16 @@ else:
     start = False
 
 while start:
-    msg_flag, wordLength, numIncorrect, msg = clientSocket.recv(1024)   #not sure why can't unpack
+    msg = clientSocket.recv(1024)   
+    msg = msg.decode()
+    #print(msg)
+    if msg ==  "":
+        continue
+    else:
+        msg_flag = msg[0]
+        wordLength = msg[1]
+        numIncorrect = msg[2]
+        msg = msg[3:]
 
     if(numIncorrect == 6):
         start = False
@@ -22,10 +31,6 @@ while start:
     if(msg.find("You Win!") != -1):
         start = False
         break
-
-
-    msg = msg.decode()
-    print(msg)
 
     letter = input('Letter to guess: ')
     letter = letter.encode()
