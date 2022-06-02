@@ -14,30 +14,28 @@ def hangman(connectionSocket, addr, words):
     msg_flag = 0                    #msg_flag?
     wordLength = len(guessWord)
 
-    if clientMessage == '0':    #if empty message is received, then we start game
+    if clientMessage == 'y':    #need a better way to start game. tried sending empty message but doesn't work
         gameFinished = False
     else:
         gameFinished = True
 
     while not gameFinished:
-        if clientMessage == '0':
-            continue
-        else:
-            if(clientMessage[0] and clientMessage[0] not in lettersGuessed):
-                lettersGuessed.append(clientMessage[0])
-                if(clientMessage[0] not in guessWord):
-                    numIncorrect += 1
-                    incorrectGuesses.append(clientMessage[0])
+        if(clientMessage[0] and clientMessage[0] not in lettersGuessed):    #need to avoid the initial 'y' message that starts the game
+            lettersGuessed.append(clientMessage[0])                         #i tried if clientmessage == "": continue, else:, but didn't work?
+            if(clientMessage[0] not in guessWord):              
+                numIncorrect += 1
+                incorrectGuesses.append(clientMessage[0])
         msg = ""
         if(numIncorrect != 6):
             for x in range(wordLength):
-                if(guessWord[x] in lettersGuessed):
+                if(guessWord[x] in lettersGuessed):     #need to fix this to correspond correct letter positions
                     msg += guessWord[x]
                 else:
                     msg += '_'
             msg += '\n'
+            msg += 'Incorrect Guesses: '
             for x in incorrectGuesses:
-                msg += 'Incorrect Guesses:' + ' ' + x       #incorrect guesses in msg
+                msg += x +  ' '          
             msg += '\n'
             if(msg == guessWord):
                 msg = "You Win!" + "\n" + "The word was " + guessWord
@@ -46,7 +44,7 @@ def hangman(connectionSocket, addr, words):
             msg = "You Lose :(" + "\n" + "The word was " + guessWord
             gameFinished = True
         connectionSocket.send("{}{}{}{}"
-        .format(msg_flag, chr(wordLength), chr(numIncorrect), msg)       #msg flag?
+        .format(msg_flag, chr(wordLength), chr(numIncorrect), msg)       
         .encode())
 
         clientMessage = connectionSocket.recv(1024).decode()

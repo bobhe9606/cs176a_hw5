@@ -7,8 +7,7 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 message = input('Ready to start game? (y/n): ')
 if message == 'y':
-    zero = '0'
-    clientSocket.send(zero.encode())
+    clientSocket.send(message.encode())
     start = True
 else:
     print('Game Over!')
@@ -16,14 +15,14 @@ else:
 
 while start:
     msg = clientSocket.recv(1024).decode() 
-    print(msg)
     if msg ==  "":
         continue
     else:
         msg_flag = msg[0]
         wordLength = msg[1]
         numIncorrect = msg[2]
-        msg = msg[3:]
+        msg = msg[4:]
+    print(msg)
 
     if(numIncorrect == 6):
         start = False
@@ -39,7 +38,7 @@ while start:
 
     letter = letter.lower()
     print(letter)
-    print(numIncorrect)
+    print(numIncorrect)         #not returniing numIncorrect
     clientSocket.send(letter.encode())
 
 
