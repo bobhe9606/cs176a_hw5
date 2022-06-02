@@ -20,29 +20,39 @@ def hangman(connectionSocket, addr, words):
         gameFinished = True
 
     while not gameFinished:
-        if(clientMessage[1] and clientMessage[1] not in lettersGuessed):
-            lettersGuessed.append(clientMessage[1])
-            if(clientMessage[1] not in guessWord):
-                numIncorrect += 1
-                incorrectGuesses.append(clientMessage[1])
+        if clientMessage == '0':
+            continue
+        else:
+            if(clientMessage[0] and clientMessage[0] not in lettersGuessed):
+                lettersGuessed.append(clientMessage[0])
+                if(clientMessage[0] not in guessWord):
+                    numIncorrect += 1
+                    incorrectGuesses.append(clientMessage[0])
         msg = ""
-        for x in range(wordLength):
-            if(guessWord[x] in lettersGuessed):
-                msg += guessWord[x]
-            else:
-                msg += '_'
-        for x in range(incorrectGuesses):
-            msg += 'Incorrect Guesses: ' + incorrectGuesses[x] + '\n'      #incorrect guesses in msg
-        if(msg == guessWord):
-            msg = "You Win!" + "\n" + "The word was " + guessWord
+        if(numIncorrect != 6):
+            for x in range(wordLength):
+                if(guessWord[x] in lettersGuessed):
+                    msg += guessWord[x]
+                else:
+                    msg += '_'
+            msg += '\n'
+            for x in incorrectGuesses:
+                msg += 'Incorrect Guesses:' + ' ' + x       #incorrect guesses in msg
+            msg += '\n'
+            if(msg == guessWord):
+                msg = "You Win!" + "\n" + "The word was " + guessWord
+                gameFinished = True
         if(numIncorrect == 6):
             msg = "You Lose :(" + "\n" + "The word was " + guessWord
+            gameFinished = True
         connectionSocket.send("{}{}{}{}"
         .format(msg_flag, chr(wordLength), chr(numIncorrect), msg)       #msg flag?
         .encode())
 
+        clientMessage = connectionSocket.recv(1024).decode()
+
+
     connectionSocket.close()
-    numClients -= 1
 
 
 with open('hangman_words.txt') as wordFile:
@@ -67,5 +77,7 @@ while True:
     numClients += 1
     clientGame = threading.Thread(target=hangman, args=(connectionSocket, addr, words,))
     clientGame.start()
+    numClients -= 1
+
 
 
