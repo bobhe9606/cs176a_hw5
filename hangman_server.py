@@ -57,7 +57,7 @@ with open('hangman_words.txt') as wordFile:
     words = wordFile.readlines()
 
 serverPort = int(sys.argv[1])
-seed = int(sys.argv[2])     #to control randomness
+seed = int(sys.argv[2])     #to control randomness, just input 0 or any integer doesn't matter
 random.seed(seed)
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('127.0.0.1', serverPort))
