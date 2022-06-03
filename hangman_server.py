@@ -8,42 +8,59 @@ import random
 def hangman(connectionSocket, addr, words):
     clientMessage = connectionSocket.recv(1024).decode()
     guessWord = words[random.randint(0, 14)]
-    gameFinished = False
     lettersGuessed = []
     incorrectGuesses = []
     numIncorrect = 0
+    msg_flag = 0                    #msg_flag?
     wordLength = len(guessWord)
+
+    if clientMessage == 'y':    #need a better way to start game. tried sending empty message but doesn't work
+        gameFinished = False
+    else:
+        gameFinished = True
+
     while not gameFinished:
-        if(clientMessage[1] and clientMessage[1] not in lettersGuessed):
-            lettersGuessed.append(clientMessage[1])
-            if(clientMessage[1] not in guessWord):
+        if(clientMessage[0] and clientMessage[0] not in lettersGuessed):    #need to avoid the initial 'y' message that starts the game
+            lettersGuessed.append(clientMessage[0])                         #i tried if clientmessage == "": continue, else:, but didn't work?
+            if(clientMessage[0] not in guessWord):              
                 numIncorrect += 1
-                incorrectGuesses.append(clientMessage[1])
-        if(numIncorrect == 6):
-            connectionSocket.send("{}You Lose :(".format(chr(11)).encode())
+                incorrectGuesses.append(clientMessage[0])
         msg = ""
-        for x in range(wordLength):
-            if(guessWord[x] in lettersGuessed):
-                msg += guessWord[x]
-            else:
-                msg += '_'
-        if(msg == guessWord):
-            connectionSocket.send("8You Win!".encode())
-        for x in range(incorrectGuesses):
-            msg += incorrectGuesses[x]
-            
+        if(numIncorrect != 6):
+            for x in range(wordLength):
+                if(guessWord[x] in lettersGuessed):     #need to fix this to correspond correct letter positions
+                    msg += guessWord[x]
+                else:
+                    msg += '_'
+            msg += '\n'
+            msg += 'Incorrect Guesses: '
+            for x in incorrectGuesses:
+                msg += x +  ' '          
+            msg += '\n'
+            if(msg == guessWord):
+                msg = "You Win!" + "\n" + "The word was " + guessWord
+                gameFinished = True
+        if(numIncorrect == 6):
+            msg = "You Lose :(" + "\n" + "The word was " + guessWord
+            gameFinished = True
         connectionSocket.send("{}{}{}{}"
-        .format(0, chr(wordLength), chr(numIncorrect), msg)
+        .format(msg_flag, chr(wordLength), chr(numIncorrect), msg)       
         .encode())
+
+        clientMessage = connectionSocket.recv(1024).decode()
+
+
     connectionSocket.close()
-    numClients -= 1
+
 
 with open('hangman_words.txt') as wordFile:
     words = wordFile.readlines()
 
 serverPort = int(sys.argv[1])
+seed = int(sys.argv[2])     #to control randomness, just input 0 or any integer doesn't matter
+random.seed(seed)
 serverSocket = socket(AF_INET, SOCK_STREAM)
-serverSocket.bind('127.0.0.1', serverPort)
+serverSocket.bind(('127.0.0.1', serverPort))
 serverSocket.listen()
 print('The Server is ready to receive')
 numClients = 0
@@ -56,7 +73,9 @@ while True:
         connectionSocket.close()
 
     numClients += 1
-    clientGame = threading.Thread(hangman, (connectionSocket, addr, words))
+    clientGame = threading.Thread(target=hangman, args=(connectionSocket, addr, words,))
     clientGame.start()
+    numClients -= 1
+
 
 
