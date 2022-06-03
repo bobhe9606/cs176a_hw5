@@ -23,7 +23,7 @@ if message == 'y':
             printWord += word[x] + " "
     printWord += word[-1]
     print(">>>" + printWord)
-    print(">>>Incorrect Guesses: " + wrongLetters + "\n")
+    print(">>>Incorrect Guesses: " + wrongLetters + "\n>>>")
     letter = input('>>>Letter to guess: ')
     while(len(letter) > 1 or letter.isdigit() or len(letter) < 1):
         print('>>>Error! Please guess one letter.')
@@ -51,7 +51,7 @@ while start:
                 #  for x in range(len(word) - 1):
                 #     finalWord += word[x] + " "
                 #  finalWord += word[-1]
-                 print(">>> The word was " + word)
+                 print(">>>The word was " + word)
                  clientSocket.send("0".encode())
                  msg = clientSocket.recv(1024).decode()
                  print(">>>" + msg[1:])
@@ -63,10 +63,10 @@ while start:
                 #  for x in range(len(word) - 1):
                 #     finalWord += word[x] + " "
                 #  finalWord += word[-1]
-                 print(">>> The word was " + word)
+                 print(">>>The word was " + word)
                  clientSocket.send("0".encode())
                  msg = clientSocket.recv(1024).decode()
-                 print(">>> " + msg[1:])
+                 print(">>>" + msg[1:])
                  start = False
                  break
         else:
@@ -84,7 +84,7 @@ while start:
                 printWord += word[x] + " "
             printWord += word[-1]
     print(">>>" + printWord)
-    print(">>>Incorrect Guesses: " + wrongLetters + "\n")
+    print(">>>Incorrect Guesses: " + wrongLetters + "\n>>>")
     letter = input('>>>Letter to guess: ')
     while(len(letter) > 1 or letter.isdigit() or len(letter) < 1):
         print('>>>Error! Please guess one letter.')
