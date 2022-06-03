@@ -3,6 +3,7 @@ import sys
 
 
 word = ""
+gameOverMsg = False
 serverName = sys.argv[1]
 serverPort = int(sys.argv[2])
 clientSocket = socket(AF_INET, SOCK_STREAM)
@@ -13,24 +14,28 @@ if message == 'y':
     start = True
     msg = clientSocket.recv(1024).decode()
 
-    wordLength = int(msg[1])
-    numIncorrect = int(msg[2])
-    word = msg[3:3 + wordLength]
-    wrongLetters = ""
+    if(msg[0] != '0'):
+        print(">>>" + msg[1:])
+        start = False
+    else:
+        wordLength = int(msg[1])
+        numIncorrect = int(msg[2])
+        word = msg[3:3 + wordLength]
+        wrongLetters = ""
 
-    printWord = ""
-    for x in range(len(word) - 1):
-            printWord += word[x] + " "
-    printWord += word[-1]
-    print(">>>" + printWord)
-    print(">>>Incorrect Guesses: " + wrongLetters + "\n>>>")
-    letter = input('>>>Letter to guess: ')
-    while(len(letter) > 1 or letter.isdigit() or len(letter) < 1):
-        print('>>>Error! Please guess one letter.')
+        printWord = ""
+        for x in range(len(word) - 1):
+                printWord += word[x] + " "
+        printWord += word[-1]
+        print(">>>" + printWord)
+        print(">>>Incorrect Guesses: " + wrongLetters + "\n>>>")
         letter = input('>>>Letter to guess: ')
+        while(len(letter) > 1 or letter.isdigit() or len(letter) < 1):
+            print('>>>Error! Please guess one letter.')
+            letter = input('>>>Letter to guess: ')
 
-    letter = letter.lower()
-    clientSocket.send("1{}".format(letter).encode())
+        letter = letter.lower()
+        clientSocket.send("1{}".format(letter).encode())
 
 
 else:
@@ -56,6 +61,7 @@ while start:
                  msg = clientSocket.recv(1024).decode()
                  print(">>>" + msg[1:])
                  start = False
+                 gameOverMsg = True
                  break
              else:
                  finalWord = ""
@@ -68,6 +74,7 @@ while start:
                  msg = clientSocket.recv(1024).decode()
                  print(">>>" + msg[1:])
                  start = False
+                 gameOverMsg = True
                  break
         else:
             wordLength = int(msg[1])
@@ -98,7 +105,7 @@ while start:
 
 
 
-
-print(">>>Game Over!")
+if(gameOverMsg):
+    print(">>>Game Over!")
 clientSocket.close()
 

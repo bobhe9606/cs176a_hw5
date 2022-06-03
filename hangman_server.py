@@ -3,9 +3,11 @@ import sys
 
 import threading
 import random
-
+numClients = 0
 
 def hangman(connectionSocket, addr, words):
+    global numClients
+    # print(numClients, "THREAD")
     clientMessage = connectionSocket.recv(1024).decode()
     guessWord = words[random.randint(0, 14)].lower()
     guessWord = guessWord[0:len(guessWord) - 1] #-1 to get rid of new line character
@@ -35,6 +37,12 @@ def hangman(connectionSocket, addr, words):
         #                           .format(chr(31))
         #                           .encode())
         #     continue
+        if(not clientMessage):
+            connectionSocket.close()
+            lock.acquire()
+            numClients -= 1
+            lock.release()
+            return
         if(clientMessage[1] and clientMessage[1] not in lettersGuessed):    #need to avoid the initial 'y' message that starts the game
             lettersGuessed.append(clientMessage[1])                         #i tried if clientmessage == "": continue, else:, but didn't work?
             if(clientMessage[1] not in guessWord):              
@@ -73,6 +81,9 @@ def hangman(connectionSocket, addr, words):
 
 
     connectionSocket.close()
+    lock.acquire()
+    numClients -= 1
+    lock.release()
 
 
 with open('hangman_words.txt') as wordFile:
@@ -85,19 +96,25 @@ serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('127.0.0.1', serverPort))
 serverSocket.listen()
 print('The Server is ready to receive')
-numClients = 0
+lock = threading.Lock()
 
 while True:
     connectionSocket, addr = serverSocket.accept()
-
-    if (numClients > 3):
-        connectionSocket.send("000server-overloaded".encode())
-        connectionSocket.close()
-
+    lock.acquire()
     numClients += 1
-    clientGame = threading.Thread(target=hangman, args=(connectionSocket, addr, words,))
+    lock.release()
+    if (numClients > 3):
+        connectionSocket.recv(1024)
+        connectionSocket.send("Nserver-overloaded".encode())
+        connectionSocket.close()
+        lock.acquire()
+        numClients -= 1
+        lock.release()
+        continue
+
+    clientGame = threading.Thread(target=hangman, args=(connectionSocket, addr, words))
     clientGame.start()
-    numClients -= 1
+    # print(numClients, "MAIN")
 
 
 
