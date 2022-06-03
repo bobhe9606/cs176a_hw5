@@ -1,14 +1,13 @@
 from socket import *
 import sys
 
-from pyrsistent import inc
 
 word = ""
 serverName = sys.argv[1]
 serverPort = int(sys.argv[2])
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
-message = input('Ready to start game? (y/n): ')
+message = input('>>>Ready to start game? (y/n): ')
 if message == 'y':
     clientSocket.send("0".encode())
     start = True
@@ -23,12 +22,12 @@ if message == 'y':
     for x in range(len(word) - 1):
             printWord += word[x] + " "
     printWord += word[-1]
-    print(printWord)
-    print("Incorrect Guesses: " + wrongLetters + "\n")
-    letter = input('Letter to guess: ')
+    print(">>>" + printWord)
+    print(">>>Incorrect Guesses: " + wrongLetters + "\n")
+    letter = input('>>>Letter to guess: ')
     while(len(letter) > 1 or letter.isdigit() or len(letter) < 1):
-        print('Error! Please guess one letter.')
-        letter = input('Letter to guess: ')
+        print('>>>Error! Please guess one letter.')
+        letter = input('>>>Letter to guess: ')
 
     letter = letter.lower()
     clientSocket.send("1{}".format(letter).encode())
@@ -49,25 +48,25 @@ while start:
              if(msg.find("You Lose") != -1):
                  finalWord = ""
                  word = msg[1:]
-                 for x in range(len(word) - 1):
-                    finalWord += word[x] + " "
-                 finalWord += word[-1]
-                 print("The word was " + finalWord)
+                #  for x in range(len(word) - 1):
+                #     finalWord += word[x] + " "
+                #  finalWord += word[-1]
+                 print(">>> The word was " + word)
                  clientSocket.send("0".encode())
                  msg = clientSocket.recv(1024).decode()
-                 print(msg[1:])
+                 print(">>>" + msg[1:])
                  start = False
                  break
              else:
                  finalWord = ""
                  word = msg[1:]
-                 for x in range(len(word) - 1):
-                    finalWord += word[x] + " "
-                 finalWord += word[-1]
-                 print("The word was " + finalWord)
+                #  for x in range(len(word) - 1):
+                #     finalWord += word[x] + " "
+                #  finalWord += word[-1]
+                 print(">>> The word was " + word)
                  clientSocket.send("0".encode())
                  msg = clientSocket.recv(1024).decode()
-                 print(msg[1:])
+                 print(">>> " + msg[1:])
                  start = False
                  break
         else:
@@ -84,12 +83,12 @@ while start:
             for x in range(len(word) - 1):
                 printWord += word[x] + " "
             printWord += word[-1]
-    print(printWord)
-    print("Incorrect Guesses: " + wrongLetters + "\n")
-    letter = input('Letter to guess: ')
+    print(">>>" + printWord)
+    print(">>>Incorrect Guesses: " + wrongLetters + "\n")
+    letter = input('>>>Letter to guess: ')
     while(len(letter) > 1 or letter.isdigit() or len(letter) < 1):
-        print('Error! Please guess one letter.')
-        letter = input('Letter to guess: ')
+        print('>>>Error! Please guess one letter.')
+        letter = input('>>>Letter to guess: ')
 
     letter = letter.lower()
     # print(letter)
@@ -100,6 +99,6 @@ while start:
 
 
 
-print("Game Over!")
+print(">>>Game Over!")
 clientSocket.close()
 

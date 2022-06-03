@@ -46,7 +46,7 @@ def hangman(connectionSocket, addr, words):
                             "{}{}".format(wordLength, guessWord).encode())
             connectionSocket.recv(1024)
 
-            msg = "You Lose"
+            msg = "You Lose."
             gameFinished = True
             connectionSocket.send("{}{}"
                               .format(8, msg)
@@ -79,8 +79,8 @@ with open('hangman_words.txt') as wordFile:
     words = wordFile.readlines()
 
 serverPort = int(sys.argv[1])
-# seed = int(sys.argv[2])     #to control randomness, just input 0 or any integer doesn't matter
-# random.seed(seed)
+seed = int(sys.argv[2])     #to control randomness, just input 0 or any integer doesn't matter
+random.seed(seed)
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('127.0.0.1', serverPort))
 serverSocket.listen()
