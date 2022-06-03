@@ -1,6 +1,6 @@
 from socket import *
 import sys
-
+import time
 import threading
 import random
 numClients = 0
@@ -8,6 +8,7 @@ numClients = 0
 def hangman(connectionSocket, addr, words):
     global numClients
     # print(numClients, "THREAD")
+    connectionSocket.send("NStart Game?".encode())
     clientMessage = connectionSocket.recv(1024).decode()
     guessWord = words[random.randint(0, 14)].lower()
     guessWord = guessWord[0:len(guessWord) - 1] #-1 to get rid of new line character
@@ -38,10 +39,11 @@ def hangman(connectionSocket, addr, words):
         #                           .encode())
         #     continue
         if(not clientMessage):
-            connectionSocket.close()
+            # connectionSocket.close()
             lock.acquire()
             numClients -= 1
             lock.release()
+            # time.sleep(2)
             return
         if(clientMessage[1] and clientMessage[1] not in lettersGuessed):    #need to avoid the initial 'y' message that starts the game
             lettersGuessed.append(clientMessage[1])                         #i tried if clientmessage == "": continue, else:, but didn't work?
@@ -80,10 +82,11 @@ def hangman(connectionSocket, addr, words):
 
 
 
-    connectionSocket.close()
+    # connectionSocket.close()
     lock.acquire()
     numClients -= 1
     lock.release()
+    # time.sleep(2)
 
 
 with open('hangman_words.txt') as wordFile:
@@ -104,9 +107,9 @@ while True:
     numClients += 1
     lock.release()
     if (numClients > 3):
-        connectionSocket.recv(1024)
+        # connectionSocket.recv(1024)
         connectionSocket.send("Nserver-overloaded".encode())
-        connectionSocket.close()
+        # connectionSocket.close()
         lock.acquire()
         numClients -= 1
         lock.release()
