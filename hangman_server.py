@@ -42,6 +42,10 @@ def hangman(connectionSocket, addr, words):
                 incorrectGuesses.append(clientMessage[1])
         msg = ""
         if(numIncorrect == 6):
+            connectionSocket.send(
+                            "{}{}".format(wordLength, guessWord).encode())
+            connectionSocket.recv(1024)
+
             msg = "You Lose"
             gameFinished = True
             connectionSocket.send("{}{}"

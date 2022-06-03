@@ -47,16 +47,24 @@ while start:
         if(msg_flag != '0'):
 
              if(msg.find("You Lose") != -1):
-                print(msg[1:])
-                start = False
-                break
+                 finalWord = ""
+                 word = msg[1:]
+                 for x in range(len(word) - 1):
+                    finalWord += word[x] + " "
+                 finalWord += word[-1]
+                 print("The word was " + finalWord)
+                 clientSocket.send("0".encode())
+                 msg = clientSocket.recv(1024).decode()
+                 print(msg[1:])
+                 start = False
+                 break
              else:
                  finalWord = ""
                  word = msg[1:]
                  for x in range(len(word) - 1):
                     finalWord += word[x] + " "
                  finalWord += word[-1]
-                 print("THe word was " + finalWord)
+                 print("The word was " + finalWord)
                  clientSocket.send("0".encode())
                  msg = clientSocket.recv(1024).decode()
                  print(msg[1:])
